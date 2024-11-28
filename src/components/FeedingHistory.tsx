@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, Timer, Edit2, Save, X } from 'lucide-react';
+import { History, Timer, Edit2, Save, X, Trash2 } from 'lucide-react';
 import { formatDistanceToNow, format, isSameDay } from 'date-fns';
 import { FeedingSession } from '../types';
 import { formatTime } from '../utils/formatTime';
@@ -9,76 +9,29 @@ interface FeedingHistoryProps {
   onToggleHistory: () => void;
   sessions: FeedingSession[] | undefined;
   onUpdateAmount: (sessionId: string, newAmount: number) => void;
+  onDeleteSession: (sessionId: string) => void;  // Add this line
 }
 
 export function FeedingHistory({ 
   showHistory, 
   onToggleHistory, 
   sessions,
-  onUpdateAmount 
+  onUpdateAmount,
+  onDeleteSession  // Add this line
 }: FeedingHistoryProps) {
   const [editingSession, setEditingSession] = React.useState<string | null>(null);
   const [editAmount, setEditAmount] = React.useState<number>(0);
 
-  // Group sessions by date
-  const groupedSessions = React.useMemo(() => {
-    if (!sessions) return new Map();
-    
-    const groups = new Map();
-    
-    sessions.forEach(session => {
-      const dateKey = format(session.startTime, 'yyyy-MM-dd');
-      if (!groups.has(dateKey)) {
-        groups.set(dateKey, {
-          date: session.startTime,
-          sessions: [],
-          totalTime: 0,
-          totalMl: 0
-        });
-      }
-      
-      const group = groups.get(dateKey);
-      group.sessions.push(session);
-      group.totalTime += session.duration || 0;
-      group.totalMl += session.amount || 0;
-    });
-    
-    return groups;
-  }, [sessions]);
-
-  const handleStartEdit = (session: FeedingSession) => {
-    setEditingSession(session.id);
-    setEditAmount(session.amount || 0);
-  };
-
-  const handleSaveEdit = (sessionId: string) => {
-    onUpdateAmount(sessionId, editAmount);
-    setEditingSession(null);
-  };
+  // ... rest of your existing code ...
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-      <button
-        onClick={onToggleHistory}
-        className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 mb-4"
-      >
-        <History className="w-5 h-5" />
-        <span>Feeding History</span>
-      </button>
-
+      {/* ... existing code ... */}
       {showHistory && sessions && (
         <div className="space-y-6">
           {Array.from(groupedSessions.entries()).map(([dateKey, group]) => (
             <div key={dateKey} className="space-y-3">
-              <div className="flex justify-between items-center border-b dark:border-gray-700 pb-2">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {format(group.date, 'EEEE, MMMM d')}
-                </h3>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Total: {formatTime(group.totalTime)} | {group.totalMl}ml
-                </div>
-              </div>
-
+              {/* ... existing date header code ... */}
               <div className="space-y-3">
                 {group.sessions.map((session) => (
                   <div
@@ -120,6 +73,13 @@ export function FeedingHistory({
                             className="p-1 text-gray-400 hover:text-gray-500"
                           >
                             <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => onDeleteSession(session.id)}
+                            className="p-1 text-red-400 hover:text-red-500"
+                            aria-label="Delete feeding session"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       )}
