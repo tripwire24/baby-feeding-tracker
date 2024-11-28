@@ -1,10 +1,15 @@
 export interface FeedingSession {
-  id?: number;
+  id: string;
   startTime: Date;
   endTime?: Date;
   duration?: number;
   amount?: number;
-  type: 'breast' | 'bottle';
-  side?: 'left' | 'right';
-  notes?: string;
+  type: 'bottle' | 'breast';
+}
+
+export interface DayGroup {
+  date: Date;
+  sessions: FeedingSession[];
+  totalTime: number;
+  totalMl: number;
 }
