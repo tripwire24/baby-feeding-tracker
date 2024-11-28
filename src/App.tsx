@@ -84,6 +84,11 @@ function App() {
   const handleUpdateAmount = async (sessionId: string, newAmount: number) => {
     await db.feedingSessions.update(sessionId, { amount: newAmount });
   };
+  const handleDeleteSession = async (sessionId: string) => {
+    if (window.confirm('Are you sure you want to delete this feeding session?')) {
+    await db.feedingSessions.delete(sessionId);
+    }
+  };
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
@@ -137,6 +142,7 @@ function App() {
             onToggleHistory={() => setShowHistory(!showHistory)}
             sessions={feedingSessions}
             onUpdateAmount={handleUpdateAmount}
+            onDeleteSession={handleDeleteSession}  // Add this line
           />
         </main>
       </div>
